@@ -31,10 +31,13 @@
 import { defineComponent, ref } from 'vue'
 import axios from '../api'
 import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
+
 
 export default defineComponent({
   name: 'LoginPage',
   setup () {
+    const router = useRouter()
     const loginForm = ref({
       username: '',
       password: ''
@@ -51,12 +54,16 @@ export default defineComponent({
       form.value.validate(valid => {
         if (valid) {
           axios.post('/api/login/', loginForm.value).then(res => {
-            const { access, refresh } = res
-            console.log('🚀 ~ access, refresh:', access, refresh)
+            const { access } = res
             ElMessage({
               message: '登陆成功',
-              type: 'success'
+              type: 'success',
+              duration: 1000
             })
+            localStorage.setItem('token', access)
+            setTimeout(() => {
+              router.push('/')
+            }, 400);
           })
         } else {
           return false
